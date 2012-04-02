@@ -1,6 +1,7 @@
+package Config::INI::Serializer;
+
 use strict;
 use warnings;
-package Config::INI::Serializer;
 
 # ABSTRACT: Round-trip INI serializer for nested data
 
@@ -11,18 +12,14 @@ L<App::Context|App::Context>, namely the essential functions from
 L<App:Serializer::Ini|App:Serializer::Ini> and
 L<App::Reference|App::Reference>.
 
-I<O NOES - JET ANOTHR INI MOTULE!> - but this one turned out to work
-better with INI-like data serialization in mind where compatibility
-with other modules is not as important, like I needed for the
+I<OH NOES - JET ANOTHR INI MOTULE!> - but this one turned out to work
+better for INI-like nested data serialization where compatibility with
+other modules is not as important. It is used in the
 L<dpath|App::DPath> utility.
 
-=head1 AUTHOR
-
-=over 4
-
-=item Stephen Adkins, original code in L<App:Serializer::Ini|App::Serializer::Ini>.
-
-=item Steffen Schwigon, carved out into separate module to have a lightweight dependency.
+B<ACHTUNG!> The "round-trip ability" belongs to the data written by
+the module itself. It does B<not> perfectly keep foreign data
+structures. Carefully read the C<CAVEATS> section below.
 
 =head1 SYNOPSIS
 
@@ -31,20 +28,20 @@ L<dpath|App::DPath> utility.
 =item Data to INI
 
  require Config::INI::Serializer;
- my $ini = Config::INI::Serializer->new;
- $data   = { an         => 'arbitrary',
-             collection => [ 'of', 'data', ],
-             of         => {
-                            arbitrary => 'depth',
-                           },
-           };
+ my $ini  = Config::INI::Serializer->new;
+ my $data = { an         => 'arbitrary',
+              collection => [ 'of', 'data', ],
+              of         => {
+                             arbitrary => 'depth',
+                            },
+            };
  my $ini_text = $ini->serialize($data);
 
 =item INI to Data
 
- require Config::INI::Serializer;
- my $ini  = Config::INI::Serializer->new;
- my $data = $ini->deserialize($ini_text);
+ $data = $ini->deserialize($ini_text);
+
+=item No functions are exported.
 
 =back
 
@@ -52,13 +49,29 @@ L<dpath|App::DPath> utility.
 
 =over 4
 
-=item It is quite for sure a non-standard variant of INI.
+=item It is an extended, probably non-standard variant of INI.
 
-It can read most of the other INI formats, too, but writes out a bit
-special to handle nested data. 
+It can read most of the other INI formats, but writing is done a bit
+special to handle nested data.
 
 So using this module is kind of a "one-way ticket to slammertown with
 no return ticket" aka. vendor lock-in.
+
+=item It turns ARRAYs into HASHes.
+
+Array indexes are expressed like numbered hash keys:
+
+ [list.0]
+ ...
+ [list.1]
+ ...
+ [list.2]
+ ...
+ [list.10]
+
+which, when re-read, actually B<become> hash keys as there is no more
+distinction after that. Besides losing the array structure this also
+loses the order of elements.
 
 =item It does not handle multiline values correctly.
 
@@ -67,12 +80,14 @@ They will written out straight like this
  key1 = This will be
  some funky multi line
  entry
- key2 = foo
+ key2 = affe
 
-but on reading you will only get C<key = This will be>.
+but on reading you will only get
+C<key1 = This will be> and
+C<key2 = affe>.
 
-It does not choke on the additional lines, though, as ong as they
-don't contain a C<=> character.
+At least it does not choke on the additional multilines, as long as
+they don't contain a C<=> character.
 
 =back
 
@@ -111,6 +126,15 @@ don't contain a C<=> character.
 
 =back
 
+=head1 ACKNOWLEDGEMENTS
+
+=over 4
+
+=item Stephen Adkins, actual author of original code
+
+=item Steffen Schwigon, only carved it out into separate module
+
+=back
 
 =cut
 
@@ -119,12 +143,7 @@ sub new {
         bless {}, shift;
 }
 
-#############################################################################
-# _get_branch()
-#############################################################################
-
-# utility function, stolen from App::Reference, made internal here
-
+# utility method, stolen from App::Reference, made internal here
 sub _get_branch {
     my ($self, $branch_name, $create, $ref) = @_;
     my ($sub_branch_name, $branch_piece, $attrib, $type, $branch, $cache_ok);
@@ -182,7 +201,7 @@ sub _get_branch {
     return $branch;
 }
 
-# utility function, stolen from App::Reference, made internal here
+# utility method, stolen from App::Reference, made internal here
 sub _set {
     my ($self, $property_name, $property_value, $ref) = @_;
     #$ref = $self if (!defined $ref);
@@ -209,11 +228,13 @@ sub _set {
     }
 }
 
+# the serialize frontend method
 sub serialize {
     my ($self, $data) = @_;
     $self->_serialize($data, "");
 }
 
+# recursive serialize method doing the actual work, internal
 sub _serialize {
     my ($self, $data, $section) = @_;
     my ($section_data, $idx, $key, $elem);
@@ -252,6 +273,7 @@ sub _serialize {
     return $section_data;
 }
 
+# the deserialize frontend method
 sub deserialize {
     my ($self, $inidata) = @_;
     my ($data, $r, $line, $attrib_base, $attrib, $value);
@@ -274,6 +296,6 @@ sub deserialize {
     return $data;
 }
 
-# END stolen ::App::Serialize::Ini
+# END of stolen ::App::Serialize::Ini
 
 1;
