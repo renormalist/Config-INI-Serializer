@@ -8,7 +8,7 @@ use Test::More;
 use Test::Deep;
 
 BEGIN {
-	use_ok( 'Config::INI::Serializer' );
+        use_ok( 'Config::INI::Serializer' );
 }
 
 # expected data
