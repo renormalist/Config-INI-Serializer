@@ -130,11 +130,12 @@ they don't contain a C<=> character.
 
 =over 4
 
-=item Stephen Adkins, actual author of original code
-
-=item Steffen Schwigon, only carved it out into separate module
+=item Stephen Adkins is the author of the original code.
 
 =back
+
+I only carved it out into a separate module to provide it as a
+light-weight dependency.
 
 =cut
 
