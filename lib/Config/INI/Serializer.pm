@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: Round-trip INI serializer for nested data
 
-=head1 ABOUT
+=head1 DESCRIPTION
 
 This library is the carved-out INI-file handling from
 L<App::Context|App::Context>, namely the essential functions from
