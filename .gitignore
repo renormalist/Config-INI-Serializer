@@ -1,3 +1,4 @@
-Config-INI-Serializer-*.*.tar.gz
-Config-INI-Serializer-*.*/
-
+.*
+!.gitignore
+Config-INI-Serializer-*
+Debian_CPANTS.txt
