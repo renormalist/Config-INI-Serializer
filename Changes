@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - Kwalitee hygiene: polish pod, whitespace, perl version
 
 0.001     2012-04-04 13:17:43 Europe/Berlin
         - initial carved out version with tests and dzil config
