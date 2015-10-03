@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002     2015-10-03
         - Kwalitee hygiene: polish pod, whitespace, perl version
 
 0.001     2012-04-04 13:17:43 Europe/Berlin
