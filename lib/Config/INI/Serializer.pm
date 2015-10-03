@@ -1,5 +1,6 @@
 package Config::INI::Serializer;
 
+use 5.006;
 use strict;
 use warnings;
 
@@ -88,6 +89,18 @@ C<key2 = affe>.
 
 At least it does not choke on the additional multilines, as long as
 they don't contain a C<=> character.
+
+=back
+
+=method new
+
+Constructor.
+
+=over 4
+
+=item Sample Usage:
+
+    $serializer = Config::INI::Serializer->new;
 
 =back
 
